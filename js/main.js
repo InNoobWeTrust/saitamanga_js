@@ -1,3 +1,4 @@
+import proxy from './proxy.js';
 import request from './request.js';
 
 const onDoneShow = async (html) => {
@@ -10,9 +11,50 @@ const galleryRender = async (dom) => {
   const titleParser = selectParser(
     '.table.table-hover>tbody>tr>td:nth-child(1)>a'
   );
-  const titles = await titleParser(dom);
-  const lTitles = titles.map((t) => `<p>${t}</p>`).join('');
-  return lTitles;
+  const linkParser = selectParser(
+    '.table.table-hover>tbody>tr>td:nth-child(1)>a',
+    {attr: 'href'},
+  );
+  const picParser = selectParser(
+    '.table.table-hover>tbody>tr>td:nth-child(1)>a',
+    {attr: 'data-thumbnail'},
+  );
+  const subtitleParser = selectParser(
+    '.table.table-hover>tbody>tr>td:nth-child(1)>a',
+    {attr: 'data-description'},
+  );
+  const cardsData = zip(
+    await titleParser(dom),
+    await linkParser(dom),
+    await picParser(dom),
+    await subtitleParser(dom)
+  ).map(([title, link, pic, subtitle]) => ({title, link, pic, subtitle}));
+  const cards = cardsData.map(cardRender);
+  return cards.join('');
+};
+
+const zip = (arr, ...arrs) => {
+  return arr.map((val, i) => arrs.reduce((a, arr) => [...a, arr[i]], [val]));
+};
+
+const cardRender = ({title, link='#', pic='', subtitle=''}) => {
+  const titleEl = textRender('h1', title);
+  const picEl = picRender(pic);
+  const subtitleEl = textRender('p', subtitle);
+  return `
+  <div data-href=${link}>
+    ${titleEl}
+    ${picEl}
+    ${subtitleEl}
+  </div>`;
+};
+
+const textRender = (tag, text) => {
+  return `<${tag}>${text}</${tag}>`;
+};
+
+const picRender = (pic) => {
+  return `<img src=${pic}></img>`;
 };
 
 Element.prototype.getAttr = function(attr) {
@@ -38,7 +80,10 @@ const querior = (selector, selectAll = true) => async (elem) => {
   }
 };
 
-const selectParser = (selector, attr, selectAll = true) => async (elem) => {
+const selectParser = (
+  selector,
+  {attr, selectAll = true} = {attr: undefined}
+) => async (elem) => {
   const nodeListData = await querior(selector, selectAll)(elem);
   const data = [...nodeListData].map((e) => e.getAttr(attr));
   return data;
@@ -46,7 +91,7 @@ const selectParser = (selector, attr, selectAll = true) => async (elem) => {
 
 request(
   'GET',
-  'https://hocvientruyentranh.net/truyen/all',
+  proxy('https://hocvientruyentranh.net/truyen/all'),
   (html) => Promise.all(
     [
       onDoneShow,
