@@ -2,6 +2,10 @@ import proxy from './proxy.js';
 import request from './request.js';
 
 const onDoneShow = async (html) => {
+  document.getElementById('test').innerHTML = tagRender(
+    'h1',
+    ['Hello, bug']
+  )`class="${Date()[0]}" style="color: red;"`;
   const dom = document.createElement('html');
   dom.innerHTML = html;
   document.getElementById('root').innerHTML = await galleryRender(dom);
@@ -37,6 +41,16 @@ const zip = (arr, ...arrs) => {
   return arr.map((val, i) => arrs.reduce((a, arr) => [...a, arr[i]], [val]));
 };
 
+const interleave = (...arrs) => {
+  const maxLen = Math.max.apply(null, arrs.map((a) => a.length));
+  return [...Array(maxLen)]
+    .map((_, i) => arrs
+      .map((a) => a[i])
+      .reduce((a, b) => undefined == b ? a : a.concat(b), [])
+    )
+    .reduce((a, b) => a.concat(b));
+};
+
 const cardRender = ({title, link='#', pic='', subtitle=''}) => {
   const titleEl = textRender('h2', title, 'title');
   const picEl = picRender(pic);
@@ -49,6 +63,14 @@ const cardRender = ({title, link='#', pic='', subtitle=''}) => {
       ${subtitleEl}
     </div>
   </div>`;
+};
+
+const tagRender = (tag, [...childs]) => ([...tmpls], ...evals) => {
+  const attrs = interleave(tmpls, evals);
+  return `
+  <${tag} ${attrs}>
+    ${childs}
+  </${tag}>`;
 };
 
 const textRender = (tag, text, cls) => {
@@ -84,7 +106,7 @@ const querior = (selector, selectAll = true) => async (elem) => {
 
 const selectParser = (
   selector,
-  {attr, selectAll = true} = {attr: undefined}
+  {attr, selectAll = true} = {}
 ) => async (elem) => {
   const nodeListData = await querior(selector, selectAll)(elem);
   const data = [...nodeListData].map((e) => e.getAttr(attr));
