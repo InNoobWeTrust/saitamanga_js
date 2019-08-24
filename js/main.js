@@ -38,23 +38,25 @@ const zip = (arr, ...arrs) => {
 };
 
 const cardRender = ({title, link='#', pic='', subtitle=''}) => {
-  const titleEl = textRender('h1', title);
+  const titleEl = textRender('h2', title, 'title');
   const picEl = picRender(pic);
-  const subtitleEl = textRender('p', subtitle);
+  const subtitleEl = textRender('p', subtitle, 'subsubtitle');
   return `
-  <div data-href=${link}>
-    ${titleEl}
+  <div class="card" data-href="${link}">
     ${picEl}
-    ${subtitleEl}
+    <div class="container">
+      ${titleEl}
+      ${subtitleEl}
+    </div>
   </div>`;
 };
 
-const textRender = (tag, text) => {
-  return `<${tag}>${text}</${tag}>`;
+const textRender = (tag, text, cls) => {
+  return `<${tag} ${undefined != cls ? 'class="' + cls + '"': ''}>${text}</${tag}>`;
 };
 
-const picRender = (pic) => {
-  return `<img src=${pic}></img>`;
+const picRender = (pic, cls) => {
+  return `<img src="${pic}" ${undefined != cls ? 'class="' + cls + '"' : ''}></img>`;
 };
 
 Element.prototype.getAttr = function(attr) {
@@ -89,7 +91,7 @@ const selectParser = (
   return data;
 };
 
-request(
+window.onload = () => request(
   'GET',
   proxy('https://hocvientruyentranh.net/truyen/all'),
   (html) => Promise.all(
