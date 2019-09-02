@@ -1,11 +1,20 @@
 import proxy from './proxy.js';
 import request from './request.js';
 
+import {render} from './ui/base.js';
+import Card from './ui/card.js';
+
+import {zip} from './utils/arr_mix.js';
+
 const onDoneShow = async (html) => {
-  document.getElementById('test').innerHTML = tagRender(
-    'h1',
-    ['Hello, bug']
-  )`class="${Date()[0]}" style="color: red;"`;
+  document.getElementById('test').innerHTML = render({
+    tag: 'h1',
+    props: {
+      class: Date()[0],
+      style: 'color: red;'
+    }
+  },
+  'Hello, bug');
   const dom = document.createElement('html');
   dom.innerHTML = html;
   document.getElementById('root').innerHTML = await galleryRender(dom);
@@ -32,53 +41,9 @@ const galleryRender = async (dom) => {
     await linkParser(dom),
     await picParser(dom),
     await subtitleParser(dom)
-  ).map(([title, link, pic, subtitle]) => ({title, link, pic, subtitle}));
-  const cards = cardsData.map(cardRender);
+  ).map(([header, link, thumbnail, details]) => ({header, link, thumbnail, details}));
+  const cards = cardsData.map(Card);
   return cards.join('');
-};
-
-const zip = (arr, ...arrs) => {
-  return arr.map((val, i) => arrs.reduce((a, arr) => [...a, arr[i]], [val]));
-};
-
-const interleave = (...arrs) => {
-  const maxLen = Math.max.apply(null, arrs.map((a) => a.length));
-  return [...Array(maxLen)]
-    .map((_, i) => arrs
-      .map((a) => a[i])
-      .reduce((a, b) => undefined == b ? a : a.concat(b), [])
-    )
-    .reduce((a, b) => a.concat(b));
-};
-
-const cardRender = ({title, link='#', pic='', subtitle=''}) => {
-  const titleEl = textRender('h2', title, 'title');
-  const picEl = picRender(pic);
-  const subtitleEl = textRender('p', subtitle, 'subsubtitle');
-  return `
-  <div class="card" data-href="${link}">
-    ${picEl}
-    <div class="container">
-      ${titleEl}
-      ${subtitleEl}
-    </div>
-  </div>`;
-};
-
-const tagRender = (tag, [...childs]) => ([...tmpls], ...evals) => {
-  const attrs = interleave(tmpls, evals);
-  return `
-  <${tag} ${attrs}>
-    ${childs}
-  </${tag}>`;
-};
-
-const textRender = (tag, text, cls) => {
-  return `<${tag} ${undefined != cls ? 'class="' + cls + '"': ''}>${text}</${tag}>`;
-};
-
-const picRender = (pic, cls) => {
-  return `<img src="${pic}" ${undefined != cls ? 'class="' + cls + '"' : ''}></img>`;
 };
 
 Element.prototype.getAttr = function(attr) {
@@ -115,7 +80,7 @@ const selectParser = (
 
 window.onload = () => request(
   'GET',
-  proxy('https://hocvientruyentranh.net/truyen/all'),
+  proxy('https://hocvientruyentranh.net/truyen/all?filter_type=latest-chapter'),
   (html) => Promise.all(
     [
       onDoneShow,
