@@ -1,7 +1,7 @@
 export default (method, url, onDone) => {
   const xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
+  xhttp.onreadystatechange = () => {
+    if (xhttp.readyState === 4 && xhttp.status === 200) {
       onDone(xhttp.responseText);
     }
   };

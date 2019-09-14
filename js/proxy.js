@@ -1,7 +1,7 @@
-export default url => {
-  const corsApiHost = 'cors-anywhere.herokuapp.com';
-  const corsApiUrl = 'https://' + corsApiHost + '/';
-  const origin = window.location.protocol + '//' + window.location.host;
+export default (url) => {
+  const corsApiHost = "cors-anywhere.herokuapp.com";
+  const corsApiUrl = `https://${corsApiHost}/`;
+  const origin = `${window.location.protocol}//${window.location.host}`;
   const targetOrigin = /^https?:\/\/([^/]+)/i.exec(url);
   if (
     targetOrigin &&

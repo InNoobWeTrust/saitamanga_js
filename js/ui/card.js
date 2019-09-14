@@ -1,4 +1,4 @@
-const Card = ({ header, link = '#', thumbnail = '', details }) => {
+const Card = ({ header, link = "#", thumbnail = "", details }) => {
   return `
   <div class="card" data-href="${link}">
     <img src="${thumbnail}"></img>
