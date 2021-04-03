@@ -9,6 +9,7 @@
     "export": "next export"
   },
   "dependencies": {
+    "@material-ui/core": "^4.11.3",
     "got": "^11.8.2",
     "jsdom": "^16.5.2",
     "next": "10.1.2",

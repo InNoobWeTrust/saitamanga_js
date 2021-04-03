@@ -1,5 +1,7 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import Head from "next/head";
+import Link from "next/link";
+import MangaCard from "../src/components/manga_card";
+import styles from "../styles/Home.module.css";
 
 export default function Home() {
   return (
@@ -15,9 +17,15 @@ export default function Home() {
         </h1>
 
         <p className={styles.description}>
-          Get started by editing{' '}
+          Get started by editing{" "}
           <code className={styles.code}>pages/index.js</code>
         </p>
+
+        <MangaCard
+          cover="https://st.imageinstant.net/data/comics/208/sachi-iro-no-one-room.jpg"
+          //cover="https://static.hocvientruyentranh.net/upload/thumb/1616294890015-pic-8png.png"
+          title="NO WAY"
+        />
 
         <div className={styles.grid}>
           <a href="https://nextjs.org/docs" className={styles.card}>
@@ -56,10 +64,10 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{' '}
+          Powered by{" "}
           <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
         </a>
       </footer>
     </div>
-  )
+  );
 }
